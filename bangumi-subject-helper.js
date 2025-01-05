@@ -7,6 +7,8 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setClipboard
 // @grant        GM_addStyle
+// @updateURL    https://github.com/MagmaBlock/my-browser-scripts/raw/refs/heads/main/bangumi-subject-helper.js
+// @downloadURL  https://github.com/MagmaBlock/my-browser-scripts/raw/refs/heads/main/bangumi-subject-helper.js
 // ==/UserScript==
 
 (function() {
