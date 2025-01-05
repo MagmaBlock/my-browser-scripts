@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name         Bangumi Subject Helper
-// @namespace    http://tampermonkey.net/
 // @version      1.5
 // @description  为 Bangumi 条目页面添加辅助功能
 // @match        https://bgm.tv/subject/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setClipboard
 // @grant        GM_addStyle
-// @updateURL    https://github.com/MagmaBlock/my-browser-scripts/raw/refs/heads/main/bangumi-subject-helper.js
-// @downloadURL  https://github.com/MagmaBlock/my-browser-scripts/raw/refs/heads/main/bangumi-subject-helper.js
+// @updateURL    https://github.com/MagmaBlock/my-browser-scripts/raw/refs/heads/main/bangumi-subject-helper.user.js
+// @downloadURL  https://github.com/MagmaBlock/my-browser-scripts/raw/refs/heads/main/bangumi-subject-helper.user.js
 // ==/UserScript==
 
 (function() {
