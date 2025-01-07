@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Bangumi Subject Helper
-// @version      1.5
+// @version      1.6
 // @description  为 Bangumi 条目页面添加辅助功能
 // @match        https://bgm.tv/subject/*
 // @grant        GM_xmlhttpRequest
@@ -250,32 +250,73 @@
             }
         }
 
-        // 鼠标事件控制面板显示和隐藏
+        // 鼠标和触摸事件控制面板显示和隐藏
         let hideTimeout;
-        triggerButton.addEventListener('mouseenter', () => {
+        let isTouchInteraction = false;
+
+        // 处理触摸开始
+        triggerButton.addEventListener('touchstart', (e) => {
+            isTouchInteraction = true;
+            e.preventDefault(); // 防止触发 click 事件
             clearTimeout(hideTimeout);
-            showPanel();
+            if (!isPanelVisible) {
+                showPanel();
+            }
+        }, { passive: false });
+
+        // 处理鼠标进入
+        triggerButton.addEventListener('mouseenter', () => {
+            if (!isTouchInteraction) {
+                clearTimeout(hideTimeout);
+                showPanel();
+            }
         });
+
+        // 处理触摸结束
+        window.addEventListener('touchend', (e) => {
+            if (!window.contains(e.target) && !triggerButton.contains(e.target)) {
+                hideTimeout = setTimeout(() => {
+                    hidePanel();
+                }, 500);
+            }
+        });
+
+        // 处理鼠标离开
         window.addEventListener('mouseleave', () => {
-            hideTimeout = setTimeout(() => {
-                hidePanel();
-            }, 500); // 0.5 秒后隐藏面板
+            if (!isTouchInteraction) {
+                hideTimeout = setTimeout(() => {
+                    hidePanel();
+                }, 500);
+            }
         });
+
         window.addEventListener('mouseenter', () => {
             clearTimeout(hideTimeout);
         });
 
-        // 点击按钮切换面板显示/隐藏
-        triggerButton.addEventListener('click', (event) => {
-            event.stopPropagation(); // 阻止事件冒泡
-            togglePanel();
+        // 处理点击事件
+        triggerButton.addEventListener('click', (e) => {
+            if (!isTouchInteraction) {
+                e.stopPropagation();
+                togglePanel();
+            }
         });
 
-        // 点击页面其他区域隐藏面板
-        document.addEventListener('click', (event) => {
-            if (isPanelVisible && !window.contains(event.target) && !triggerButton.contains(event.target)) {
+        // 处理页面点击
+        document.addEventListener('click', (e) => {
+            if (isPanelVisible && !window.contains(e.target) && !triggerButton.contains(e.target)) {
                 hidePanel();
             }
+        });
+
+        // 重置触摸状态
+        document.addEventListener('touchstart', () => {
+            isTouchInteraction = true;
+        });
+        document.addEventListener('touchend', () => {
+            setTimeout(() => {
+                isTouchInteraction = false;
+            }, 100);
         });
     }
 
