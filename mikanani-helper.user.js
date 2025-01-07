@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         蜜柑计划助手
-// @version      1.4
+// @version      1.5
 // @description  提取页面中的番剧数据并在点击按钮后显示，支持格式化输出和 JSON 输出，点击按钮切换浮窗显示
 // @match        https://mikanani.me/
 // @grant        none
@@ -101,30 +101,110 @@
     jsonContent.appendChild(jsonTextarea);
     resultWindow.appendChild(jsonContent);
 
-    // 按钮点击事件
-    button.addEventListener('click', () => {
-        if (resultWindow.style.display === 'none') {
-            // 运行提取数据的脚本
-            const extractedData = extractData();
+    // 面板显示状态
+    let isPanelVisible = false;
+    let isTouchInteraction = false;
+    let hideTimeout;
 
-            // 更新格式化输出
-            if (extractedData.length > 0) {
-                formatContent.innerHTML = extractedData
-                    .map(item => `<div><strong>${item.animeName}</strong> (ID: ${item.bangumiId})</div>`)
-                    .join('');
-            } else {
-                formatContent.innerHTML = '<div>未找到番剧数据</div>';
-            }
+    // 显示面板
+    function showPanel() {
+        // 运行提取数据的脚本
+        const extractedData = extractData();
 
-            // 更新 JSON 输出
-            jsonTextarea.value = JSON.stringify(extractedData, null, 2);
-
-            // 显示浮窗
-            resultWindow.style.display = 'block';
+        // 更新格式化输出
+        if (extractedData.length > 0) {
+            formatContent.innerHTML = extractedData
+                .map(item => `<div><strong>${item.animeName}</strong> (ID: ${item.bangumiId})</div>`)
+                .join('');
         } else {
-            // 隐藏浮窗
-            resultWindow.style.display = 'none';
+            formatContent.innerHTML = '<div>未找到番剧数据</div>';
         }
+
+        // 更新 JSON 输出
+        jsonTextarea.value = JSON.stringify(extractedData, null, 2);
+
+        resultWindow.style.display = 'block';
+        isPanelVisible = true;
+    }
+
+    // 隐藏面板
+    function hidePanel() {
+        resultWindow.style.display = 'none';
+        isPanelVisible = false;
+    }
+
+    // 切换面板显示/隐藏
+    function togglePanel() {
+        if (isPanelVisible) {
+            hidePanel();
+        } else {
+            showPanel();
+        }
+    }
+
+    // 处理触摸开始
+    button.addEventListener('touchstart', (e) => {
+        isTouchInteraction = true;
+        e.preventDefault(); // 防止触发 click 事件
+        clearTimeout(hideTimeout);
+        if (!isPanelVisible) {
+            showPanel();
+        }
+    }, { passive: false });
+
+    // 处理鼠标进入
+    button.addEventListener('mouseenter', () => {
+        if (!isTouchInteraction) {
+            clearTimeout(hideTimeout);
+            showPanel();
+        }
+    });
+
+    // 处理触摸结束
+    resultWindow.addEventListener('touchend', (e) => {
+        if (!resultWindow.contains(e.target) && !button.contains(e.target)) {
+            hideTimeout = setTimeout(() => {
+                hidePanel();
+            }, 500);
+        }
+    });
+
+    // 处理鼠标离开
+    resultWindow.addEventListener('mouseleave', () => {
+        if (!isTouchInteraction) {
+            hideTimeout = setTimeout(() => {
+                hidePanel();
+            }, 500);
+        }
+    });
+
+    resultWindow.addEventListener('mouseenter', () => {
+        clearTimeout(hideTimeout);
+    });
+
+    // 处理点击事件
+    button.addEventListener('click', (e) => {
+        if (!isTouchInteraction) {
+            e.stopPropagation();
+            togglePanel();
+        }
+    });
+
+    // 处理页面点击
+    document.addEventListener('click', (e) => {
+        if (isPanelVisible && !resultWindow.contains(e.target) && !button.contains(e.target)) {
+            hidePanel();
+        }
+    });
+
+    // 重置触摸状态
+    document.addEventListener('touchstart', () => {
+        isTouchInteraction = true;
+    });
+    document.addEventListener('touchend', () => {
+        setTimeout(() => {
+            isTouchInteraction = false;
+        }, 100);
     });
 
     // Tab 切换事件
