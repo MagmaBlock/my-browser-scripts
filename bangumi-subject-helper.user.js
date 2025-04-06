@@ -166,6 +166,10 @@
                 <a id="subtitleButton" target="_blank">搜索字幕</a>
                 <a id="lavaniButton" target="_blank">在番剧库搜索</a>
             </div>
+            <div style="margin-top: 10px;">
+                <strong>收藏统计:</strong>
+                <div id="collectionSum"></div>
+            </div>
         `;
 
         const includePathCheckboxElement = window.querySelector('#includePath');
@@ -203,6 +207,10 @@
 
             data.name_cn = selectedName;
             folderNameTextareaElement.value = formatFolderName(data, includePath, isBDRip);
+
+            // 计算并显示 collection 数据加和
+            const collectionSum = Object.values(data.collection).reduce((sum, val) => sum + val, 0);
+            window.querySelector('#collectionSum').textContent = `总计: ${collectionSum}`;
 
             const encodedName = encodeURIComponent(selectedName);
             acgnxButtonElement.href = `https://share.acgnx.se/search.php?sort_id=0&keyword=${encodedName}`;
