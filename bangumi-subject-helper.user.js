@@ -235,7 +235,8 @@
         updateUI();
 
         // 面板显示状态
-        let isPanelVisible = false;
+        let isPanelVisible = true;
+        showPanel(); // 初始显示面板
 
         // 显示面板
         function showPanel() {
