@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Bangumi Subject Helper
-// @version      1.6
+// @version      1.7
 // @description  为 Bangumi 条目页面添加辅助功能
 // @match        https://bgm.tv/subject/*
 // @grant        GM_xmlhttpRequest
